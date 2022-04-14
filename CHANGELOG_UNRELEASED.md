@@ -64,6 +64,8 @@
   + lemma `abse1`
 - OPAM package `coq-mathcomp-classical` containing `boolp.v`
 - file `all_classical.v`
+- in file `mathcomp_extra.v`:
+  + lemmas `pred_omapE` and `pred_omap_set` (from `classical_sets.v`)
 
 ### Changed
 
@@ -131,12 +133,15 @@
 - in `esum.v`:
   + `ereal_pseries_esum` -> `nneseries_esum`
 - file `theories/boolp.v` -> `classical/boolp.v`
+- file `theories/classical_sets.v` -> `classical/classical_sets.v`
 
 ### Removed
 
 - in `mathcomp_extra.v`:
   + lemmas `natr_absz`, `ge_pinfty`, `le_ninfty`, `gt_pinfty`,
     `lt_ninfty`
+- in file `classical_sets.v`:
+  + lemmas `pred_omapE` and `pred_omap_set` (moved to `mathcomp_extra.v`)
 
 ### Infrastructure
 

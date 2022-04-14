@@ -1,6 +1,7 @@
 (* mathcomp analysis (c) 2022 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect finmap ssralg ssrnum ssrint rat.
 From mathcomp Require Import finset interval.
+From mathcomp.classical Require Import boolp classical_sets.
 
 (******************************************************************************)
 (* This files contains lemmas and definitions missing from MathComp.          *)
@@ -134,6 +135,22 @@ Proof.
 move=> hD fK hK c cD /=; rewrite -[RHS]hK/=; case hcE : (h c) => [b|]//=.
 have bD : b \in D by have := hD _ cD; rewrite hcE inE.
 by rewrite -[b in RHS]fK; case: (f b) => //=; have /hK := cD; rewrite hcE.
+Qed.
+
+Lemma pred_omapE {T : Type} (D : {pred T}) :
+  pred_omap D = mem (some @` D)%classic.
+Proof.
+apply/funext=> -[x|]/=; apply/idP/idP; rewrite /pred_omap/= inE //=.
+- by move=> xD; exists x.
+- by move=> [// + + [<-]].
+- by case.
+Qed.
+
+Lemma pred_omap_set {T : Type} (D : set T) :
+  pred_omap (mem D) = mem (some @` D)%classic.
+Proof.
+by rewrite pred_omapE; apply/funext => x/=; apply/idP/idP; rewrite ?inE;
+   move=> [y/= ]; rewrite ?in_setE; exists y; rewrite ?in_setE.
 Qed.
 
 Lemma eqbLR (b1 b2 : bool) : b1 = b2 -> b1 -> b2.

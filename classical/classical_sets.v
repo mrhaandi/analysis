@@ -1,8 +1,7 @@
 (* mathcomp analysis (c) 2017 Inria and AIST. License: CeCILL-C.              *)
 From mathcomp Require Import all_ssreflect ssralg matrix finmap order ssrnum.
 From mathcomp Require Import ssrint interval.
-From mathcomp.classical Require Import boolp.
-Require Import mathcomp_extra.
+Require Import boolp.
 
 (******************************************************************************)
 (* This file develops a basic theory of sets and types equipped with a        *)
@@ -963,20 +962,6 @@ Proof. by apply/predeqP => -[i j]; split=> [[? ? [/= -> //]]|[]]; exists i. Qed.
 Lemma bigcupM1r T1 T2 (A1 : T2 -> set T1) (A2 : set T2) :
   \bigcup_(i in A2) (A1 i `*` [set i]) = A1 ``*` A2.
 Proof. by apply/predeqP => -[i j]; split=> [[? ? [? /= -> //]]|[]]; exists j. Qed.
-
-Lemma pred_omapE (D : {pred T}) : pred_omap D = mem (some @` D).
-Proof.
-apply/funext=> -[x|]/=; apply/idP/idP; rewrite /pred_omap/= inE //=.
-- by move=> xD; exists x.
-- by move=> [// + + [<-]].
-- by case.
-Qed.
-
-Lemma pred_omap_set (D : set T) : pred_omap (mem D) = mem (some @` D).
-Proof.
-by rewrite pred_omapE; apply/funext => x/=; apply/idP/idP; rewrite ?inE;
-   move=> [y/= ]; rewrite ?in_setE; exists y; rewrite ?in_setE.
-Qed.
 
 End basic_lemmas.
 #[global]
