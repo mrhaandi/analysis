@@ -87,3 +87,7 @@ Arguments mul_fun {T R} _ _ _ /.
 Definition opp_fun T (R : zmodType) (f : T -> R) x := (- f x)%R.
 Notation "\- f" := (opp_fun f) : ring_scope.
 Arguments opp_fun {T R} _ _ /.
+
+Lemma sumr_le0 (R : numDomainType) I (r : seq I) (P : pred I) (F : I -> R) :
+  (forall i, P i -> F i <= 0)%R -> (\sum_(i <- r | P i) F i <= 0)%R.
+Proof. by move=> F0; elim/big_rec : _ => // i x Pi; apply/ler_naddl/F0. Qed.

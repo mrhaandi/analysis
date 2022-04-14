@@ -6,7 +6,8 @@
 (* -------------------------------------------------------------------- *)
 
 From mathcomp Require Import all_ssreflect all_algebra finmap.
-From mathcomp.classical Require Import boolp classical_sets functions.
+From mathcomp.classical Require Import boolp classical_sets.
+From mathcomp.classical Require Import functions cardinality fsbigop.
 Require Import mathcomp_extra reals signed.
 Require Import topology.
 
@@ -41,6 +42,7 @@ Require Import topology.
 (*  (_ <= _)%E, (_ < _)%E, == comparison relations for extended reals         *)
 (*  (_ >= _)%E, (_ > _)%E                                                     *)
 (*   (\sum_(i in A) f i)%E == bigop-like notation in scope %E                 *)
+(*  (\sum_(i \in A) f i)%E == finitely supported sum, see fsbigop.v           *)
 (*      maxe x y, mine x y == notation for the maximum/minimum of two         *)
 (*                            extended real numbers                           *)
 (*             ereal_sup E == supremum of E                                   *)
@@ -513,6 +515,11 @@ Notation "\sum_ ( i 'in' A ) F" :=
   (\big[+%dE/0%:E]_(i in A) F%dE) : ereal_dual_scope.
 Notation "\sum_ ( i 'in' A ) F" :=
   (\big[+%E/0%:E]_(i in A) F%E) : ereal_scope.
+
+Notation "\sum_ ( i '\in' A ) F" := (\big[+%dE/0%E]_(i \in A) F%dE) :
+  ereal_dual_scope.
+Notation "\sum_ ( i '\in' A ) F" := (\big[+%E/0%E]_(i \in A) F%E) :
+  ereal_scope.
 
 Section ERealOrderTheory.
 Context {R : numDomainType}.
@@ -1072,6 +1079,20 @@ Qed.
 Lemma lte0_abs x : x < 0 -> `|x| = - x.
 Proof. by move=> /ltW/lee0_abs. Qed.
 
+Lemma fsume_ge0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+  (forall i, P i -> 0 <= F i) -> 0 <= \sum_(i \in P) F i.
+Proof.
+move=> PF; case: finite_supportP; rewrite ?big_nil// => X XP F0 _.
+by rewrite big_seq_cond big_mkcondr sume_ge0// => i /XP/PF.
+Qed.
+
+Lemma fsume_le0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+  (forall t, P t -> F t <= 0) -> \sum_(i \in P) F i <= 0.
+Proof.
+move=> PF; case: finite_supportP; rewrite ?big_nil// => X XP F0 _.
+by rewrite big_seq_cond big_mkcondr sume_le0// => i /XP/PF.
+Qed.
+
 End ERealArithTh_numDomainType.
 Notation "x +? y" := (adde_def x%dE y%dE) : ereal_dual_scope.
 Notation "x +? y" := (adde_def x y) : ereal_scope.
@@ -1102,6 +1123,23 @@ Proof. by case: x => [x| |]; case: y => [y| |] //=; rewrite opprD !opprK. Qed.
 Lemma dual_sumeE I (r : seq I) (P : pred I) (F : I -> \bar R) :
   (\sum_(i <- r | P i) F i)%dE = - (\sum_(i <- r | P i) (- F i)%E)%E.
 Proof.
+apply: (big_ind2 (fun x y => x = - y)%E) => [|_ x _ y -> ->|i _].
+- by rewrite oppe0.
+- by rewrite dual_addeE !oppeK.
+- by rewrite oppeK.
+Qed.
+
+Lemma finite_supportNe (I : choiceType) (P : set I) (F : I -> \bar R) :
+  finite_support 0%E P (\- F)%E = finite_support 0%E P F.
+Proof.
+rewrite /finite_support !unlock; congr fset_set; congr setI.
+by rewrite seteqP; split=> x /= /eqP + /ltac:(apply/eqP); rewrite oppe_eq0.
+Qed.
+
+Lemma dual_fsumeE (I : choiceType) (P : set I) (F : I -> \bar R) :
+  (\sum_(i \in P) F i)%dE = (- (\sum_(i \in P) (- F i)))%E.
+Proof.
+rewrite finite_supportNe.
 apply: (big_ind2 (fun x y => x = - y)%E) => [|_ x _ y -> ->|i _].
 - by rewrite oppe0.
 - by rewrite dual_addeE !oppeK.
@@ -1296,6 +1334,20 @@ case: x => [x| |]; case: n => [//|n].
 Qed.
 
 Lemma dmule2n x : x *+ 2 = x + x. Proof. by []. Qed.
+
+Lemma dfsume_ge0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+  (forall i, P i -> 0 <= F i) -> 0 <= \sum_(i \in P) F i.
+Proof.
+move=> PF; case: finite_supportP; rewrite ?big_nil// => X XP F0 _.
+by rewrite big_seq_cond big_mkcondr dsume_ge0// => i /XP/PF.
+Qed.
+
+Lemma dfsume_le0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+  (forall t, P t -> F t <= 0) -> \sum_(i \in P) F i <= 0.
+Proof.
+move=> PF; case: finite_supportP; rewrite ?big_nil// => X XP F0 _.
+by rewrite big_seq_cond big_mkcondr dsume_le0// => i /XP/PF.
+Qed.
 
 End DualERealArithTh_numDomainType.
 
@@ -2245,6 +2297,50 @@ move: x => [x| |] ih.
 - by rewrite mulrNy gtr0_sg// mul1e enatmul_ninfty.
 Qed.
 
+Lemma fsume_gt0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+  0 < \sum_(i \in P) F i -> exists2 i, P i & 0 < F i.
+Proof.
+apply: contraPP => /forall2NP xNPF; rewrite le_gtF// fsume_le0// => i Pi.
+by case: (xNPF i) => // /negP; case: ltP.
+Qed.
+
+Lemma fsume_lt0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+  \sum_(i \in P) F i < 0 -> exists2 i, P i & F i < 0.
+Proof.
+apply: contraPP => /forall2NP xNPF; rewrite le_gtF// fsume_ge0// => i Pi.
+by case: (xNPF i) => // /negP; case: ltP.
+Qed.
+
+Lemma pfsume_eq0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+  finite_set P ->
+  (forall i, P i -> 0 <= F i) ->
+  \sum_(i \in P) F i = 0 -> forall i, P i -> F i = 0.
+Proof.
+move=> Pfin F0 /eqP; apply: contraTP => /existsPNP[i Pi /eqP Fi0].
+rewrite (fsbigD1 i)//= padde_eq0 ?F0 ?negb_and ?Fi0//.
+by rewrite fsume_ge0// => j [/F0->].
+Qed.
+
+Lemma ge0_mule_fsumr (T : choiceType) x (F : T -> \bar R) (P : set T) :
+  (forall i : T, 0 <= F i) -> x * (\sum_(i \in P) F i) = \sum_(i \in P) x * F i.
+Proof.
+move=> F0; have [->{x}|x0] := eqVneq x 0%E.
+  by rewrite mul0e big1// => ? _; rewrite mul0e.
+rewrite ge0_sume_distrr//; apply: eq_fbigl => y.
+rewrite !unlock; congr (_ \in fset_set _).
+apply/seteqP; rewrite /preimage; split=> [|] z/= [Pz Fz0];
+  split=> //; apply: contra_not Fz0.
+by move=> /eqP; rewrite mule_eq0 (negbTE x0)/= => /eqP.
+by move=> ->; rewrite mule0.
+Qed.
+
+Lemma ge0_mule_fsuml (T : choiceType) x (F : T -> \bar R) (P : set T) :
+  (forall i : T, 0 <= F i) -> (\sum_(i \in P) F i) * x = \sum_(i \in P) F i * x.
+Proof.
+move=> F0; rewrite muleC ge0_mule_fsumr//.
+by apply: eq_fsbigr => i; rewrite muleC.
+Qed.
+
 End ERealArithTh_realDomainType.
 Arguments lee_sum_nneg_ord {R}.
 Arguments lee_sum_npos_ord {R}.
@@ -2603,6 +2699,46 @@ Proof. by move=> x y z; rewrite !dual_addeE oppe_min adde_maxr oppe_max. Qed.
 
 Lemma dmule_natl x n : n%:R%:E * x = x *+ n.
 Proof. by rewrite mule_natl ednatmulE. Qed.
+
+Lemma dfsume_gt0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+  0 < \sum_(i \in P) F i -> exists2 i, P i & 0 < F i.
+Proof.
+rewrite dual_fsumeE oppe_gt0 => /fsume_lt0[i Pi].
+by rewrite oppe_lt0 => ?; exists i.
+Qed.
+
+Lemma dfsume_lt0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+  \sum_(i \in P) F i < 0 -> exists2 i, P i & F i < 0.
+Proof.
+rewrite dual_fsumeE oppe_lt0 => /fsume_gt0[i Pi].
+by rewrite oppe_gt0 => ?; exists i.
+Qed.
+
+Lemma pdfsume_eq0 (I : choiceType) (P : set I) (F : I -> \bar R) :
+  finite_set P ->
+  (forall i, P i -> 0 <= F i) ->
+  \sum_(i \in P) F i = 0 -> forall i, P i -> F i = 0.
+Proof.
+move=> Pfin F0 /eqP; apply: contraTP => /existsPNP[i Pi /eqP Fi0].
+rewrite (fsbigD1 i)//= pdadde_eq0 ?F0 ?negb_and ?Fi0//.
+by rewrite dfsume_ge0// => j [/F0->].
+Qed.
+
+Lemma le0_mule_dfsumr (T : choiceType) x (F : T -> \bar R) (P : set T) :
+  (forall i : T, F i <= 0) -> x * (\sum_(i \in P) F i) = \sum_(i \in P) x * F i.
+Proof.
+move=> Fge0.
+rewrite !dual_fsumeE muleN ge0_mule_fsumr; last by move=> ?; rewrite oppe_ge0.
+rewrite (eq_bigr _ (fun _ _ => muleN _ _)).
+by rewrite (eq_finite_support _ (fun i _ => muleN _ _)).
+Qed.
+
+Lemma le0_mule_dfsuml (T : choiceType) x (F : T -> \bar R) (P : set T) :
+  (forall i : T, F i <= 0) -> (\sum_(i \in P) F i) * x = \sum_(i \in P) F i * x.
+Proof.
+move=> F0; rewrite muleC le0_mule_dfsumr//.
+by apply: eq_fsbigr => i; rewrite muleC.
+Qed.
 
 End DualERealArithTh_realDomainType.
 Arguments lee_dsum_nneg_ord {R}.
