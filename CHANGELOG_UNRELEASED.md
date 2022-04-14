@@ -62,6 +62,8 @@
     `ptws_compact_closed`, `ascoli_forward`, `compact_equicontinuous`
 - in file `ereal.v`:
   + lemma `abse1`
+- OPAM package `coq-mathcomp-classical` containing `boolp.v`
+- file `all_classical.v`
 
 ### Changed
 
@@ -128,6 +130,7 @@
   + `adde_def_nneg_series` -> `adde_def_nneseries`
 - in `esum.v`:
   + `ereal_pseries_esum` -> `nneseries_esum`
+- file `theories/boolp.v` -> `classical/boolp.v`
 
 ### Removed
 

@@ -1,0 +1,44 @@
+# This file was generated from `meta.yml`, please do not edit manually.
+# Follow the instructions on https://github.com/coq-community/templates to regenerate.
+
+opam-version: "2.0"
+maintainer: "Reynald Affeldt <reynald.affeldt@aist.go.jp>"
+version: "dev"
+
+homepage: "https://github.com/math-comp/analysis"
+dev-repo: "git+https://github.com/math-comp/analysis.git"
+bug-reports: "https://github.com/math-comp/analysis/issues"
+license: "CECILL-C"
+
+synopsis: "A library for classical logic for mathematical components"
+description: """
+This repository contains a library for classical logic for
+the Coq proof-assistant and using the Mathematical Components library."""
+
+build: [make "-C" "classical" "-j%{jobs}%"]
+install: [make "-C" "classical" "install"]
+depends: [
+  "coq" { (>= "8.13" & < "8.16~") | (= "dev") }
+  "coq-mathcomp-ssreflect" { (>= "1.13.0" & < "1.15~") | (= "dev") }
+]
+
+tags: [
+  "category:Mathematics/Classical Logic"
+  "keyword:classical"
+  "keyword:logic"
+  "keyword:sets"
+  "logpath:mathcomp.classical"
+]
+authors: [
+  "Reynald Affeldt"
+  "Yves Bertot"
+  "Cyril Cohen"
+  "Marie Kerjean"
+  "Assia Mahboubi"
+  "Damien Rouhling"
+  "Pierre Roux"
+  "Kazuhiko Sakaguchi"
+  "Zachary Stone"
+  "Pierre-Yves Strub"
+  "Laurent Théry"
+]
