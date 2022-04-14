@@ -10,6 +10,8 @@
 
 classical/boolp.v
 classical/classical_sets.v
+classical/mathcomp_extra.v
+classical/functions.v
 theories/mathcomp_extra.v
 theories/ereal.v
 theories/reals.v
@@ -34,7 +36,6 @@ theories/measure.v
 theories/numfun.v
 theories/lebesgue_integral.v
 theories/summability.v
-theories/functions.v
 theories/signed.v
 theories/altreals/xfinmap.v
 theories/altreals/discrete.v

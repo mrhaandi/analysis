@@ -66,6 +66,14 @@
 - file `all_classical.v`
 - in file `mathcomp_extra.v`:
   + lemmas `pred_omapE` and `pred_omap_set` (from `classical_sets.v`)
+- file `classical/mathcomp_extra.v`
+- in file `classical/mathcomp_extra.v`:
+  + definition `olift` (from `mathcomp_extra.v`)
+  + definition `pred_omap` (from `mathcomp_extra.v`)
+  + definition `mul_fun` and notation `f \* g` (from `mathcomp_extra.v`)
+  + lemmas `all_sig2_cond`, `oapp_comp`, `olift_comp`, `can_in_pcan`,
+    `pcan_in_inj`, `ocan_in_comp`, `pred_omapE`, `pred_omap_set`,
+    `eqbRL` (from `mathcomp_extra.v`)
 
 ### Changed
 
@@ -134,6 +142,7 @@
   + `ereal_pseries_esum` -> `nneseries_esum`
 - file `theories/boolp.v` -> `classical/boolp.v`
 - file `theories/classical_sets.v` -> `classical/classical_sets.v`
+- file `theories/functions.v` -> `classical/functions.v`
 
 ### Removed
 
@@ -142,6 +151,14 @@
     `lt_ninfty`
 - in file `classical_sets.v`:
   + lemmas `pred_omapE` and `pred_omap_set` (moved to `mathcomp_extra.v`)
+  + lemmas `pred_omapE` and `pred_omap_set` (moved to `classical/mathcomp_extra.v`)
+- in file `mathcomp_extra.v`:
+  + definition `olift` (moved to `classical/mathcomp_extra.v`)
+  + definition `pred_omap` (moved to `classical/mathcomp_extra.v`)
+  + definition `mul_fun` and notation `f \* g` (moved to `classical/mathcomp_extra.v`)
+  + lemmas `all_sig2_cond`, `oapp_comp`, `olift_comp`, `can_in_pcan`,
+    `pcan_in_inj`, `ocan_in_comp`, `pred_omapE`, `pred_omap_set`,
+    `eqbRL` (moved to `classical/mathcomp_extra.v`)
 
 ### Infrastructure
 
