@@ -74,6 +74,7 @@
   + lemmas `all_sig2_cond`, `oapp_comp`, `olift_comp`, `can_in_pcan`,
     `pcan_in_inj`, `ocan_in_comp`, `pred_omapE`, `pred_omap_set`,
     `eqbRL` (from `mathcomp_extra.v`)
+  + definition `opp_fun` and notation `\- f` (from `mathcomp_extra.v`)
 
 ### Changed
 
@@ -143,6 +144,7 @@
 - file `theories/boolp.v` -> `classical/boolp.v`
 - file `theories/classical_sets.v` -> `classical/classical_sets.v`
 - file `theories/functions.v` -> `classical/functions.v`
+- file `theories/cardinality.v` -> `classical/cardinality.v`
 
 ### Removed
 
@@ -159,6 +161,7 @@
   + lemmas `all_sig2_cond`, `oapp_comp`, `olift_comp`, `can_in_pcan`,
     `pcan_in_inj`, `ocan_in_comp`, `pred_omapE`, `pred_omap_set`,
     `eqbRL` (moved to `classical/mathcomp_extra.v`)
+  + definition `opp_fun` and notation `\- f` (moved to `classical/mathcomp_extra.v`)
 
 ### Infrastructure
 
