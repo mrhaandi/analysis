@@ -403,3 +403,55 @@ Check (- x%:inum)%:itv.
 Check (1 - x%:inum)%:i01.
 
 End Test1.
+
+Section Test2.
+
+Variable R : numDomainType.
+Variable x : {i01 R}.
+
+Fail Lemma test : (x%:inum * x%:inum)%:i01 = x%:inum%:i01.
+
+End Test2.
+
+Section NumDomainStability'.
+Context {R : numDomainType}.
+
+Lemma mul01_inum_subproof (x : {i01 R}) (y : {i01 R}) :
+  Itv.spec `[0, 1] (x%:inum * y%:inum).
+Proof.
+move: x y => [x /= +] [y /=].
+rewrite /Itv.itv_cond !in_itv/= => /andP[x0 x1] /andP[y0 y1]; apply/andP; split.
+- by rewrite mulr_ge0.
+- by rewrite -(mulr1 1%:~R) ler_pmul.
+Qed.
+
+Canonical mul01_inum (x : {i01 R}) (y : {i01 R}) :=
+  Itv.mk (mul01_inum_subproof x y).
+
+End NumDomainStability'.
+
+Section Test2'.
+
+Variable R : numDomainType.
+
+Lemma test (x : {i01 R}) : (x%:inum * x%:inum)%:i01 = 0%:i01 :> {i01 R}.
+Abort.
+
+Definition s_of_pq (p q : {i01 R}) : {i01 R} :=
+  (1 - ((1 - p%:inum)%:i01%:inum * (1 - q%:inum)%:i01%:inum))%:i01.
+
+Lemma s_of_p0 (p : {i01 R}) : s_of_pq p 0%:i01 = p.
+Proof.
+apply/val_inj => /=.
+by rewrite subr0 mulr1 opprB addrCA subrr addr0.
+Qed.
+
+Reserved Notation "p .~" (format "p .~", at level 5).
+
+Definition onem (p : {i01 R}) : {i01 R} := (1 - p%:inum)%:i01.
+
+Notation "p .~" := (onem p).
+
+Definition s_of_pq' (p q : {i01 R}) : {i01 R} := (p.~%:inum * q.~%:inum)%:i01.~.
+
+End Test2'.
